@@ -1,0 +1,28 @@
+{
+  "name": "wheels",
+  "version": "0.0.0",
+  "license": "ISC",
+  "main": "cjs/index.js",
+  "module": "esm/index.js",
+  "browser": "umd/wheels.js",
+  "devDependencies": {
+    "@types/jest": "^23.3.1",
+    "@types/node": "^10.9.3",
+    "deepmerge": "^2.1.1",
+    "jest": "^23.5.0",
+    "rollup": "^0.66.2",
+    "rollup-plugin-terser": "^3.0.0",
+    "rollup-plugin-typescript2": "^0.17.0",
+    "ts-jest": "^23.1.4",
+    "tslint": "^5.11.0",
+    "tslint-preset": "reinventing-wheels/tslint-preset#v0.1.0",
+    "typescript": "^3.0.1"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "roots": [
+      "src"
+    ],
+    "preset": "ts-jest"
+  }
+}
