@@ -10,7 +10,7 @@ export const append = (parent: Element) => (...children: Element[]) =>
   children.forEach(child => parent.appendChild(child))
 
 export const prevent = <E extends Event>(fn?: (event: E) => any) =>
-  (event: E) => event.preventDefault() || fn && fn(event)
+  (event: E) => { event.preventDefault(); fn && fn(event) }
 
 export const frame = () =>
   new Promise(resolve => requestAnimationFrame(resolve))
