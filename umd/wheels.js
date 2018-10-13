@@ -154,22 +154,6 @@
     lut: lut
   });
 
-  const enc = (x) => (x & 0x08) << 3 | (x & 0x70) >> 1 | (x & 0x87) | 0x2800;
-  const row = (x) => String.fromCharCode(...Array.from(x, enc));
-  const create = (width, height) => Array.from(Array(height >> 2), () => new Uint8Array(width >> 1));
-  const toggle = (canvas, x, y) => canvas[y >> 2][x >> 1] ^= 1 << ((y & 3) | (x & 1) << 2);
-  const set = (canvas, x, y) => canvas[y >> 2][x >> 1] |= 1 << ((y & 3) | (x & 1) << 2);
-  const unset = (canvas, x, y) => canvas[y >> 2][x >> 1] &= ~(1 << ((y & 3) | (x & 1) << 2));
-  const render = canvas => canvas.map(row).join('\n');
-
-  var canvas = ({
-    create: create,
-    toggle: toggle,
-    set: set,
-    unset: unset,
-    render: render
-  });
-
   const filter = (fn) => function* (it) {
       for (const value of it)
           if (fn(value))
@@ -194,18 +178,59 @@
           yield match;
   };
 
-  const decodeByte = (n) => (n & 0x01) << 7 | (n & 0x02) << 5 | (n & 0x04) << 3 | (n & 0x08) |
-      (n & 0x10) >> 2 | (n & 0x20) >> 4 | (n & 0x40) >> 2 | (n & 0x80) >> 7;
-  const encodeByte = (n) => (n & 0x01) << 7 | (n & 0x02) << 4 | (n & 0x04) << 2 | (n & 0x08) |
-      (n & 0x10) << 2 | (n & 0x20) >> 3 | (n & 0x40) >> 5 | (n & 0x80) >> 7 | 0x2800;
-  const encode = (bytes) => String.fromCharCode(...map$1(encodeByte)(bytes));
-  const decode = (str) => Array.from(str, c => decodeByte(c.charCodeAt(0)));
+  const not = (predicate) => arg => !predicate(arg);
+  const and = (...predicates) => arg => reduce((acc, p) => acc && p(arg))(true)(predicates);
+  const or = (...predicates) => arg => reduce((acc, p) => acc || p(arg))(false)(predicates);
+
+  const sum = reduce(add)(0), product = reduce(mul)(0);
+  const add$1 = (b) => (a) => a + b, sub$1 = (b) => (a) => a - b, mul$1 = (b) => (a) => a * b, div$1 = (b) => (a) => a / b;
+
+
+
+  var index$3 = ({
+    filter: filter,
+    map: map$1,
+    reduce: reduce,
+    range: range,
+    matcher: matcher,
+    not: not,
+    and: and,
+    or: or,
+    sum: sum,
+    product: product,
+    add: add$1,
+    sub: sub$1,
+    mul: mul$1,
+    div: div$1
+  });
+
+  const reverseByte = (b) => (b & 0x01) << 7 | (b & 0x02) << 5 | (b & 0x04) << 3 | (b & 0x08) << 1 |
+      (b & 0x10) >> 1 | (b & 0x20) >> 3 | (b & 0x40) >> 5 | (b & 0x80) >> 7;
+  const encodeByte = (b) => (b & 0x08) << 3 | (b & 0x70) >> 1 | (b & 0x87) | 0x2800;
+  const decodeByte = (b) => (b & 0x40) >> 3 | (b & 0x38) << 1 | (b & 0x87);
+  const encode = (bytes) => String.fromCharCode(...map$1((b) => encodeByte(reverseByte(b)))(bytes));
+  const decode = (str) => Array.from(str, c => reverseByte(decodeByte(c.charCodeAt(0))));
 
   var encoding = ({
-    decodeByte: decodeByte,
+    reverseByte: reverseByte,
     encodeByte: encodeByte,
+    decodeByte: decodeByte,
     encode: encode,
     decode: decode
+  });
+
+  const create = (width, height) => Array.from(Array(height >> 2), () => new Uint8Array(width >> 1));
+  const toggle = (canvas, x, y) => canvas[y >> 2][x >> 1] ^= 1 << ((y & 3) | (x & 1) << 2);
+  const set = (canvas, x, y) => canvas[y >> 2][x >> 1] |= 1 << ((y & 3) | (x & 1) << 2);
+  const unset = (canvas, x, y) => canvas[y >> 2][x >> 1] &= ~(1 << ((y & 3) | (x & 1) << 2));
+  const render = canvas => canvas.map(line => String.fromCharCode(...Array.from(line, encodeByte))).join('\n');
+
+  var canvas = ({
+    create: create,
+    toggle: toggle,
+    set: set,
+    unset: unset,
+    render: render
   });
 
   const R = .212655;
@@ -245,7 +270,7 @@
 
 
 
-  var index$3 = ({
+  var index$4 = ({
     canvas: canvas,
     encoding: encoding,
     renderImageData: renderImageData
@@ -295,9 +320,9 @@
       return rgb$2(r, g, b);
   };
 
-  const add$1 = (rgbʹ, rgbʺ) => rgb(min(r(rgbʹ) + r(rgbʺ), 0xff), min(g(rgbʹ) + g(rgbʺ), 0xff), min(b(rgbʹ) + b(rgbʺ), 0xff));
-  const sub$1 = (rgbʹ, rgbʺ) => rgb(max(r(rgbʹ) - r(rgbʺ), 0), max(g(rgbʹ) - g(rgbʺ), 0), max(b(rgbʹ) - b(rgbʺ), 0));
-  const mul$1 = (rgbʹ, rgbʺ) => rgb(r$1(rgbʹ) * r(rgbʺ) + .5, g$1(rgbʹ) * g(rgbʺ) + .5, b$1(rgbʹ) * b(rgbʺ) + .5);
+  const add$2 = (rgbʹ, rgbʺ) => rgb(min(r(rgbʹ) + r(rgbʺ), 0xff), min(g(rgbʹ) + g(rgbʺ), 0xff), min(b(rgbʹ) + b(rgbʺ), 0xff));
+  const sub$2 = (rgbʹ, rgbʺ) => rgb(max(r(rgbʹ) - r(rgbʺ), 0), max(g(rgbʹ) - g(rgbʺ), 0), max(b(rgbʹ) - b(rgbʺ), 0));
+  const mul$2 = (rgbʹ, rgbʺ) => rgb(r$1(rgbʹ) * r(rgbʺ) + .5, g$1(rgbʹ) * g(rgbʺ) + .5, b$1(rgbʹ) * b(rgbʺ) + .5);
   const mix = (rgbʹ, rgbʺ) => (t) => rgb(lerp(r(rgbʹ), r(rgbʺ), t), lerp(g(rgbʹ), g(rgbʺ), t), lerp(b(rgbʹ), b(rgbʺ), t));
 
   const random$1 = () => floor(random() * 0x1000000);
@@ -314,7 +339,7 @@
 
 
 
-  var index$4 = ({
+  var index$5 = ({
     srgb: srgb$1,
     cubehelix: cubehelix,
     hsl: hsl,
@@ -326,9 +351,9 @@
     R: R,
     G: G,
     B: B,
-    add: add$1,
-    sub: sub$1,
-    mul: mul$1,
+    add: add$2,
+    sub: sub$2,
+    mul: mul$2,
     mix: mix,
     sinebow: sinebow
   });
@@ -344,7 +369,7 @@
       return props;
   };
 
-  var index$5 = ({
+  var index$6 = ({
     extend: extend,
     overwrite: overwrite,
     copy: copy,
@@ -354,42 +379,16 @@
 
   const element = name => options => overwrite(document.createElement(name), options);
   const append = (parent) => (...children) => children.forEach(child => parent.appendChild(child));
-  const prevent = (fn) => (event) => event.preventDefault() || fn && fn(event);
+  const prevent = (fn) => (event) => { event.preventDefault(); fn && fn(event); };
   const frame = () => new Promise(resolve => requestAnimationFrame(resolve));
   const context2d = (options) => element('canvas')(options).getContext('2d');
 
-  var index$6 = ({
+  var index$7 = ({
     element: element,
     append: append,
     prevent: prevent,
     frame: frame,
     context2d: context2d
-  });
-
-  const not = (predicate) => arg => !predicate(arg);
-  const and = (...predicates) => arg => reduce((acc, p) => acc && p(arg))(true)(predicates);
-  const or = (...predicates) => arg => reduce((acc, p) => acc || p(arg))(false)(predicates);
-
-  const sum = reduce(add)(0), product = reduce(mul)(0);
-  const add$2 = (b) => (a) => a + b, sub$2 = (b) => (a) => a - b, mul$2 = (b) => (a) => a * b, div$1 = (b) => (a) => a / b;
-
-
-
-  var index$7 = ({
-    filter: filter,
-    map: map$1,
-    reduce: reduce,
-    range: range,
-    matcher: matcher,
-    not: not,
-    and: and,
-    or: or,
-    sum: sum,
-    product: product,
-    add: add$2,
-    sub: sub$2,
-    mul: mul$2,
-    div: div$1
   });
 
   const generic = (polynomial) => (bytes, previous = 0) => {
@@ -729,14 +728,14 @@
 
   exports.array = index$1;
   exports.bayer = index$2;
-  exports.braille = index$3;
-  exports.color = index$4;
-  exports.dom = index$6;
-  exports.fp = index$7;
+  exports.braille = index$4;
+  exports.color = index$5;
+  exports.dom = index$7;
+  exports.fp = index$3;
   exports.hash = index$8;
   exports.html = index$9;
   exports.math = index;
-  exports.object = index$5;
+  exports.object = index$6;
   exports.prng = index$a;
   exports.re = index$c;
   exports.tag = index$b;

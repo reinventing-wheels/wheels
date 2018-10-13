@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const iter_1 = require("../fp/iter");
-exports.decodeByte = (n) => (n & 0x01) << 7 | (n & 0x02) << 5 | (n & 0x04) << 3 | (n & 0x08) |
-    (n & 0x10) >> 2 | (n & 0x20) >> 4 | (n & 0x40) >> 2 | (n & 0x80) >> 7;
-exports.encodeByte = (n) => (n & 0x01) << 7 | (n & 0x02) << 4 | (n & 0x04) << 2 | (n & 0x08) |
-    (n & 0x10) << 2 | (n & 0x20) >> 3 | (n & 0x40) >> 5 | (n & 0x80) >> 7 | 0x2800;
-exports.encode = (bytes) => String.fromCharCode(...iter_1.map(exports.encodeByte)(bytes));
-exports.decode = (str) => Array.from(str, c => exports.decodeByte(c.charCodeAt(0)));
+const fp_1 = require("../fp");
+exports.reverseByte = (b) => (b & 0x01) << 7 | (b & 0x02) << 5 | (b & 0x04) << 3 | (b & 0x08) << 1 |
+    (b & 0x10) >> 1 | (b & 0x20) >> 3 | (b & 0x40) >> 5 | (b & 0x80) >> 7;
+exports.encodeByte = (b) => (b & 0x08) << 3 | (b & 0x70) >> 1 | (b & 0x87) | 0x2800;
+exports.decodeByte = (b) => (b & 0x40) >> 3 | (b & 0x38) << 1 | (b & 0x87);
+exports.encode = (bytes) => String.fromCharCode(...fp_1.map((b) => exports.encodeByte(exports.reverseByte(b)))(bytes));
+exports.decode = (str) => Array.from(str, c => exports.reverseByte(exports.decodeByte(c.charCodeAt(0))));
