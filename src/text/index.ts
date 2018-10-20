@@ -1,7 +1,7 @@
-import * as fonts from './fonts'
+import * as styles from './styles'
 import * as format from './format'
 
-export { fonts, format }
+export { styles, format }
 export * from './levenshtein'
 export * from './sanitize'
 export * from './split'

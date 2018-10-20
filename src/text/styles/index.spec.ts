@@ -1,6 +1,6 @@
-import { fullwidth, monospace, flags } from './fonts'
+import { fullwidth, monospace, regional } from '.'
 
-describe('fonts', () => {
+describe('styles', () => {
   // const Ru = 'Съешь ещё этих мягких французских булок да выпей же чаю.'
   // const RU = Ru.toUpperCase()
   // const ru = Ru.toLowerCase()
@@ -15,7 +15,7 @@ describe('fonts', () => {
     it.each(table)('should return %j when passed %j',
       (expected, input) => { expect(fn(input)).toBe(expected) })
 
-  describe('fullwidth', macro(fullwidth, [
+  describe('full width', macro(fullwidth, [
     ['ＰＡＣＫ ＭＹ ＢＯＸ ＷＩＴＨ ＦＩＶＥ ＤＯＺＥＮ ＬＩＱＵＯＲ ＪＵＧＳ．', EN],
     ['ｐａｃｋ ｍｙ ｂｏｘ ｗｉｔｈ ｆｉｖｅ ｄｏｚｅｎ ｌｉｑｕｏｒ ｊｕｇｓ．', en],
     ['０１２３４５６７８９', digits]
@@ -27,7 +27,7 @@ describe('fonts', () => {
     ['𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿', digits]
   ]))
 
-  describe('flags', macro(flags, [
+  describe('regional', macro(regional, [
     ['🇵🇦🇨🇰 🇲🇾 🇧🇴🇽 🇼🇮🇹🇭 🇫🇮🇻🇪 🇩🇴🇿🇪🇳 🇱🇮🇶🇺🇴🇷 🇯🇺🇬🇸.', EN],
     ['🇵🇦🇨🇰 🇲🇾 🇧🇴🇽 🇼🇮🇹🇭 🇫🇮🇻🇪 🇩🇴🇿🇪🇳 🇱🇮🇶🇺🇴🇷 🇯🇺🇬🇸.', en],
     [digits, digits]
