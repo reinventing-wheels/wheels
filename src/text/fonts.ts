@@ -8,6 +8,10 @@ const re_09 = /[0-9]/g
 const re_az = /[a-z]/g
 const re_AZ = /[A-Z]/g
 const re_aZ = /[a-zA-Z]/g
+const re_fw = /[!-~]/g
+
+export const fullwidth = (text: string) => text
+  .replace(re_fw, chr => str(0xfee0 + idx(chr)))
 
 export const monospace = (text: string) => text
   .replace(re_09, chr => str(0x1d7f6 + idx_09(chr)))

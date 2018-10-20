@@ -1,4 +1,4 @@
-import { monospace, flags } from './fonts'
+import { fullwidth, monospace, flags } from './fonts'
 
 describe('fonts', () => {
   // const Ru = 'Съешь ещё этих мягких французских булок да выпей же чаю.'
@@ -14,6 +14,12 @@ describe('fonts', () => {
   const macro = (fn: any, table: any) => () =>
     it.each(table)('should return %j when passed %j',
       (expected, input) => { expect(fn(input)).toBe(expected) })
+
+  describe('fullwidth', macro(fullwidth, [
+    ['ＰＡＣＫ ＭＹ ＢＯＸ ＷＩＴＨ ＦＩＶＥ ＤＯＺＥＮ ＬＩＱＵＯＲ ＪＵＧＳ．', EN],
+    ['ｐａｃｋ ｍｙ ｂｏｘ ｗｉｔｈ ｆｉｖｅ ｄｏｚｅｎ ｌｉｑｕｏｒ ｊｕｇｓ．', en],
+    ['０１２３４５６７８９', digits]
+  ]))
 
   describe('monospace', macro(monospace, [
     ['𝙿𝙰𝙲𝙺 𝙼𝚈 𝙱𝙾𝚇 𝚆𝙸𝚃𝙷 𝙵𝙸𝚅𝙴 𝙳𝙾𝚉𝙴𝙽 𝙻𝙸𝚀𝚄𝙾𝚁 𝙹𝚄𝙶𝚂.', EN],
