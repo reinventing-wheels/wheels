@@ -1,12 +1,23 @@
-import { encoder, decoder } from '.'
+import { encoder, decoder, convert } from '.'
 
 describe('base', () => {
-  const alpha = [...'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz']
-  const bytes = [...Buffer.from('send nudes')]
+  describe('convert', () => {
+    it('should convert from one base to another', () => {
+      const src = [0xdead, 0xf00d]
+      const dec = convert([...src], 0x10000, 100)
+      const hex = convert([...dec], 100, 0x10000)
+      expect(dec).toEqual([37, 35, 94, 11, 33])
+      expect(hex).toEqual(src)
+    })
+  })
 
-  it('should encode and decode', () => {
-    const encoded = encoder(alpha)(bytes)
-    const decoded = decoder(alpha)(encoded)
-    expect(decoded).toEqual(bytes)
+  describe('encoder/decoder', () => {
+    it('should encode and decode', () => {
+      const alphabet = [...'qwerty']
+      const message = [...Buffer.from('send nudes')]
+      const encoded = encoder(alphabet)(message)
+      const decoded = decoder(alphabet)(encoded)
+      expect(decoded).toEqual(message)
+    })
   })
 })
