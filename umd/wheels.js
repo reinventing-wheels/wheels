@@ -129,9 +129,17 @@
   });
 
   const pick = (items) => items[items.length * random() | 0];
+  const shuffle = (items) => {
+      for (let i = items.length; i > 0;) {
+          const j = Math.floor(Math.random() * i--);
+          [items[i], items[j]] = [items[j], items[i]];
+      }
+      return items;
+  };
 
   var index$1 = ({
-    pick: pick
+    pick: pick,
+    shuffle: shuffle
   });
 
   const at = (x, y, order) => {
@@ -614,16 +622,61 @@
   const re_az = /[a-z]/g;
   const re_AZ = /[A-Z]/g;
   const re_aZ = /[a-zA-Z]/g;
-  const monospace = (text) => text
-      .replace(re_09, chr => str(0x1d7f6 + idx_09(chr)))
-      .replace(re_az, chr => str(0x1d68a + idx_az(chr)))
-      .replace(re_AZ, chr => str(0x1d670 + idx_az(chr)));
-  const flags = (text) => text
-      .replace(re_aZ, chr => str(0x1f1e6 + idx_az(chr)));
+  const re_fw = /[!-~]/g;
+  const replace = (...steps) => (text) => steps.reduce((acc, [re, fn]) => acc.replace(re, fn), text);
 
-  var fonts = ({
+  const regular = replace([re_AZ, chr => str(0x1d504 + idx_az(chr))], [re_az, chr => str(0x1d51e + idx_az(chr))]);
+  const bold = replace([re_AZ, chr => str(0x1d56c + idx_az(chr))], [re_az, chr => str(0x1d586 + idx_az(chr))]);
+
+  var fractur = ({
+    regular: regular,
+    bold: bold
+  });
+
+  const regular$1 = replace([re_AZ, chr => str(0x1d49c + idx_az(chr))], [re_az, chr => str(0x1d4b6 + idx_az(chr))]);
+  const bold$1 = replace([re_AZ, chr => str(0x1d4d0 + idx_az(chr))], [re_az, chr => str(0x1d4ea + idx_az(chr))]);
+
+  var script = ({
+    regular: regular$1,
+    bold: bold$1
+  });
+
+  const bold$2 = replace([re_AZ, chr => str(0x1d400 + idx_az(chr))], [re_az, chr => str(0x1d41a + idx_az(chr))], [re_09, chr => str(0x1d7ce + idx_09(chr))]);
+  const italic = replace([re_AZ, chr => str(0x1d434 + idx_az(chr))], [re_az, chr => str(0x1d44e + idx_az(chr))]);
+  const boldItalic = replace([re_AZ, chr => str(0x1d468 + idx_az(chr))], [re_az, chr => str(0x1d482 + idx_az(chr))]);
+
+  var serif = ({
+    bold: bold$2,
+    italic: italic,
+    boldItalic: boldItalic
+  });
+
+  const regular$2 = replace([re_AZ, chr => str(0x1d5a0 + idx_az(chr))], [re_az, chr => str(0x1d5ba + idx_az(chr))], [re_09, chr => str(0x1d7e2 + idx_09(chr))]);
+  const bold$3 = replace([re_AZ, chr => str(0x1d5d4 + idx_az(chr))], [re_az, chr => str(0x1d5ee + idx_az(chr))], [re_09, chr => str(0x1d7ec + idx_09(chr))]);
+  const italic$1 = replace([re_AZ, chr => str(0x1d608 + idx_az(chr))], [re_az, chr => str(0x1d622 + idx_az(chr))]);
+  const boldItalic$1 = replace([re_AZ, chr => str(0x1d63c + idx_az(chr))], [re_az, chr => str(0x1d656 + idx_az(chr))]);
+
+  var sansSerif = ({
+    regular: regular$2,
+    bold: bold$3,
+    italic: italic$1,
+    boldItalic: boldItalic$1
+  });
+
+  const fullwidth = replace([re_fw, chr => str(0xfee0 + idx(chr))]);
+  const regional = replace([re_aZ, chr => str(0x1f1e6 + idx_az(chr))]);
+  const monospace = replace([re_AZ, chr => str(0x1d670 + idx_az(chr))], [re_az, chr => str(0x1d68a + idx_az(chr))], [re_09, chr => str(0x1d7f6 + idx_09(chr))]);
+  const doubleStruck = replace([re_AZ, chr => str(0x1d538 + idx_az(chr))], [re_az, chr => str(0x1d552 + idx_az(chr))], [re_09, chr => str(0x1d7d8 + idx_09(chr))]);
+
+  var index$d = ({
+    fullwidth: fullwidth,
+    regional: regional,
     monospace: monospace,
-    flags: flags
+    doubleStruck: doubleStruck,
+    fractur: fractur,
+    script: script,
+    serif: serif,
+    sansSerif: sansSerif
   });
 
   const tag$1 = ([head, ...tail], ...fns) => obj => fns.reduce((acc, fn, i) => acc + fn(obj) + tail[i], head);
@@ -640,6 +693,14 @@
     hashBrackets: hashBrackets,
     dollarBrackets: dollarBrackets,
     doubleBrackets: doubleBrackets
+  });
+
+  const renderer = (tmpl, arg = '$') => new Function(arg, 'return `' + tmpl + '`');
+  const render$1 = (tmpl, obj, arg = '$') => new Function(arg, '{' + Object.keys(obj) + '}', 'return `' + tmpl + '`')(obj, obj);
+
+  var template = ({
+    renderer: renderer,
+    render: render$1
   });
 
   const levenshtein = (a, b) => {
@@ -706,9 +767,10 @@
 
 
 
-  var index$d = ({
-    fonts: fonts,
+  var index$e = ({
+    styles: index$d,
     format: format$1,
+    template: template,
     levenshtein: levenshtein,
     sanitize: sanitize,
     split: split
@@ -721,12 +783,13 @@
               return arg;
   };
 
-  var index$e = ({
+  var index$f = ({
     tuple: tuple,
     firstNonNull: firstNonNull
   });
 
   exports.array = index$1;
+  exports.base = index$2;
   exports.bayer = index$2;
   exports.braille = index$4;
   exports.color = index$5;
@@ -739,8 +802,8 @@
   exports.prng = index$a;
   exports.re = index$c;
   exports.tag = index$b;
-  exports.text = index$d;
-  exports.util = index$e;
+  exports.text = index$e;
+  exports.util = index$f;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 

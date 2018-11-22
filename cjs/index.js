@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const array = require("./array");
 exports.array = array;
+const base = require("./bayer");
+exports.base = base;
 const bayer = require("./bayer");
 exports.bayer = bayer;
 const braille = require("./braille");
