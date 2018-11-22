@@ -1,4 +1,5 @@
 import * as array from './array'
+import * as base from './bayer'
 import * as bayer from './bayer'
 import * as braille from './braille'
 import * as color from './color'
@@ -16,6 +17,7 @@ import * as util from './util'
 
 export {
   array,
+  base,
   bayer,
   braille,
   color,
