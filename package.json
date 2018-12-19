@@ -6,16 +6,16 @@
   "module": "esm/index.js",
   "browser": "umd/wheels.js",
   "devDependencies": {
-    "@types/jest": "^23.3.2",
-    "deepmerge": "^2.1.1",
+    "@types/jest": "^23.3.10",
+    "deepmerge": "^3.0.0",
     "jest": "^23.6.0",
-    "rollup": "^0.66.2",
+    "rollup": "^0.68.0",
     "rollup-plugin-terser": "^3.0.0",
-    "rollup-plugin-typescript2": "^0.17.0",
-    "ts-jest": "^23.10.2",
-    "tslint": "^5.11.0",
+    "rollup-plugin-typescript2": "^0.18.1",
+    "ts-jest": "^23.10.5",
+    "tslint": "^5.12.0",
     "tslint-preset": "reinventing-wheels/tslint-preset#v0.1.0",
-    "typescript": "^3.1.1"
+    "typescript": "^3.2.2"
   },
   "jest": {
     "preset": "ts-jest",
