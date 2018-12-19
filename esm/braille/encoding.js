@@ -1,7 +1,3 @@
-import { map } from '../fp';
-export const reverseByte = (b) => (b & 0x01) << 7 | (b & 0x02) << 5 | (b & 0x04) << 3 | (b & 0x08) << 1 |
-    (b & 0x10) >> 1 | (b & 0x20) >> 3 | (b & 0x40) >> 5 | (b & 0x80) >> 7;
-export const encodeByte = (b) => (b & 0x08) << 3 | (b & 0x70) >> 1 | (b & 0x87) | 0x2800;
-export const decodeByte = (b) => (b & 0x40) >> 3 | (b & 0x38) << 1 | (b & 0x87);
-export const encode = (bytes) => String.fromCharCode(...map((b) => encodeByte(reverseByte(b)))(bytes));
-export const decode = (str) => Array.from(str, c => reverseByte(decodeByte(c.charCodeAt(0))));
+import { reverseByte, encodeByte, decodeByte } from './util';
+export const encode = (input) => String.fromCharCode(...Array.from(input, b => encodeByte(reverseByte(b))));
+export const decode = (input) => Array.from(input, c => reverseByte(decodeByte(c.charCodeAt(0))));

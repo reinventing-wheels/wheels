@@ -1,8 +1,8 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.wheels = {})));
-}(this, (function (exports) { 'use strict';
+  factory(global.wheels = {});
+}(typeof self !== 'undefined' ? self : this, function (exports) { 'use strict';
 
   const smoothstep = t => t * t * (3 - 2 * t), smootherstep = t => t * t * t * (t * (t * 6 - 15) + 10);
   const linear = t => t, in2 = t => t * t, in3 = t => t * t * t, in4 = t => t * t * t * t, in5 = t => t * t * t * t * t, out2 = t => t * (2 - t), out3 = t => (--t) * t * t + 1, out4 = t => 1 - (--t) * t * t * t, out5 = t => 1 + (--t) * t * t * t * t, inOut2 = t => t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t, inOut3 = t => t < .5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1, inOut4 = t => t < .5 ? 8 * t * t * t * t : 1 - 8 * (--t) * t * t * t, inOut5 = t => t < .5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t;
@@ -162,83 +162,46 @@
     lut: lut
   });
 
-  const filter = (fn) => function* (it) {
-      for (const value of it)
-          if (fn(value))
-              yield value;
-  };
-  const map$1 = (fn) => function* (it) {
-      for (const value of it)
-          yield fn(value);
-  };
-  const reduce = (fn) => (acc) => (it) => {
-      let accʹ = acc;
-      for (const value of it)
-          accʹ = fn(accʹ, value);
-      return accʹ;
-  };
-  const range = function* (min, max, step = 1) {
-      for (let number = min; number < max; number += step)
-          yield number;
-  };
-  const matcher = (re) => function* (input) {
-      for (let match; match = re.exec(input);)
-          yield match;
-  };
-
-  const not = (predicate) => arg => !predicate(arg);
-  const and = (...predicates) => arg => reduce((acc, p) => acc && p(arg))(true)(predicates);
-  const or = (...predicates) => arg => reduce((acc, p) => acc || p(arg))(false)(predicates);
-
-  const sum = reduce(add)(0), product = reduce(mul)(0);
-  const add$1 = (b) => (a) => a + b, sub$1 = (b) => (a) => a - b, mul$1 = (b) => (a) => a * b, div$1 = (b) => (a) => a / b;
-
-
-
-  var index$3 = ({
-    filter: filter,
-    map: map$1,
-    reduce: reduce,
-    range: range,
-    matcher: matcher,
-    not: not,
-    and: and,
-    or: or,
-    sum: sum,
-    product: product,
-    add: add$1,
-    sub: sub$1,
-    mul: mul$1,
-    div: div$1
-  });
-
   const reverseByte = (b) => (b & 0x01) << 7 | (b & 0x02) << 5 | (b & 0x04) << 3 | (b & 0x08) << 1 |
       (b & 0x10) >> 1 | (b & 0x20) >> 3 | (b & 0x40) >> 5 | (b & 0x80) >> 7;
   const encodeByte = (b) => (b & 0x08) << 3 | (b & 0x70) >> 1 | (b & 0x87) | 0x2800;
   const decodeByte = (b) => (b & 0x40) >> 3 | (b & 0x38) << 1 | (b & 0x87);
-  const encode = (bytes) => String.fromCharCode(...map$1((b) => encodeByte(reverseByte(b)))(bytes));
-  const decode = (str) => Array.from(str, c => reverseByte(decodeByte(c.charCodeAt(0))));
 
-  var encoding = ({
-    reverseByte: reverseByte,
-    encodeByte: encodeByte,
-    decodeByte: decodeByte,
-    encode: encode,
-    decode: decode
-  });
-
+  const encodeLine = (line) => Array.from(line, encodeByte);
+  const renderLine = (line) => String.fromCharCode(...encodeLine(line));
+  const dot = (x, y) => 1 << ((y & 3) | (x & 1) << 2);
+  const render = canvas => canvas.map(renderLine).join('\n');
   const create = (width, height) => Array.from(Array(height >> 2), () => new Uint8Array(width >> 1));
-  const toggle = (canvas, x, y) => canvas[y >> 2][x >> 1] ^= 1 << ((y & 3) | (x & 1) << 2);
-  const set = (canvas, x, y) => canvas[y >> 2][x >> 1] |= 1 << ((y & 3) | (x & 1) << 2);
-  const unset = (canvas, x, y) => canvas[y >> 2][x >> 1] &= ~(1 << ((y & 3) | (x & 1) << 2));
-  const render = canvas => canvas.map(line => String.fromCharCode(...Array.from(line, encodeByte))).join('\n');
+  const toggle = (canvas, x, y) => canvas[y >> 2][x >> 1] ^= dot(x, y);
+  const on = (canvas, x, y) => canvas[y >> 2][x >> 1] |= dot(x, y);
+  const off = (canvas, x, y) => canvas[y >> 2][x >> 1] &= ~dot(x, y);
+  const fill = (canvas, fn) => {
+      const w = canvas[0].length << 1;
+      const h = canvas.length << 2;
+      for (let y = 0; y < h; y += 4)
+          for (let x = 0; x < w; x += 2)
+              canvas[y >> 2][x >> 1] =
+                  fn(x + 0, y + 0) << 0 | fn(x + 1, y + 0) << 4 |
+                      fn(x + 0, y + 1) << 1 | fn(x + 1, y + 1) << 5 |
+                      fn(x + 0, y + 2) << 2 | fn(x + 1, y + 2) << 6 |
+                      fn(x + 0, y + 3) << 3 | fn(x + 1, y + 3) << 7;
+  };
 
   var canvas = ({
+    render: render,
     create: create,
     toggle: toggle,
-    set: set,
-    unset: unset,
-    render: render
+    on: on,
+    off: off,
+    fill: fill
+  });
+
+  const encode = (input) => String.fromCharCode(...Array.from(input, b => encodeByte(reverseByte(b))));
+  const decode = (input) => Array.from(input, c => reverseByte(decodeByte(c.charCodeAt(0))));
+
+  var encoding = ({
+    encode: encode,
+    decode: decode
   });
 
   const R = .212655;
@@ -278,7 +241,7 @@
 
 
 
-  var index$4 = ({
+  var index$3 = ({
     canvas: canvas,
     encoding: encoding,
     renderImageData: renderImageData
@@ -328,9 +291,9 @@
       return rgb$2(r, g, b);
   };
 
-  const add$2 = (rgbʹ, rgbʺ) => rgb(min(r(rgbʹ) + r(rgbʺ), 0xff), min(g(rgbʹ) + g(rgbʺ), 0xff), min(b(rgbʹ) + b(rgbʺ), 0xff));
-  const sub$2 = (rgbʹ, rgbʺ) => rgb(max(r(rgbʹ) - r(rgbʺ), 0), max(g(rgbʹ) - g(rgbʺ), 0), max(b(rgbʹ) - b(rgbʺ), 0));
-  const mul$2 = (rgbʹ, rgbʺ) => rgb(r$1(rgbʹ) * r(rgbʺ) + .5, g$1(rgbʹ) * g(rgbʺ) + .5, b$1(rgbʹ) * b(rgbʺ) + .5);
+  const add$1 = (rgbʹ, rgbʺ) => rgb(min(r(rgbʹ) + r(rgbʺ), 0xff), min(g(rgbʹ) + g(rgbʺ), 0xff), min(b(rgbʹ) + b(rgbʺ), 0xff));
+  const sub$1 = (rgbʹ, rgbʺ) => rgb(max(r(rgbʹ) - r(rgbʺ), 0), max(g(rgbʹ) - g(rgbʺ), 0), max(b(rgbʹ) - b(rgbʺ), 0));
+  const mul$1 = (rgbʹ, rgbʺ) => rgb(r$1(rgbʹ) * r(rgbʺ) + .5, g$1(rgbʹ) * g(rgbʺ) + .5, b$1(rgbʹ) * b(rgbʺ) + .5);
   const mix = (rgbʹ, rgbʺ) => (t) => rgb(lerp(r(rgbʹ), r(rgbʺ), t), lerp(g(rgbʹ), g(rgbʺ), t), lerp(b(rgbʹ), b(rgbʺ), t));
 
   const random$1 = () => floor(random() * 0x1000000);
@@ -347,7 +310,7 @@
 
 
 
-  var index$5 = ({
+  var index$4 = ({
     srgb: srgb$1,
     cubehelix: cubehelix,
     hsl: hsl,
@@ -359,9 +322,9 @@
     R: R,
     G: G,
     B: B,
-    add: add$2,
-    sub: sub$2,
-    mul: mul$2,
+    add: add$1,
+    sub: sub$1,
+    mul: mul$1,
     mix: mix,
     sinebow: sinebow
   });
@@ -377,7 +340,7 @@
       return props;
   };
 
-  var index$6 = ({
+  var index$5 = ({
     extend: extend,
     overwrite: overwrite,
     copy: copy,
@@ -391,7 +354,7 @@
   const frame = () => new Promise(resolve => requestAnimationFrame(resolve));
   const context2d = (options) => element('canvas')(options).getContext('2d');
 
-  var index$7 = ({
+  var index$6 = ({
     element: element,
     append: append,
     prevent: prevent,
@@ -424,7 +387,7 @@
 
 
 
-  var index$8 = ({
+  var index$7 = ({
     generic: generic,
     crc32: crc32,
     crc32c: crc32c,
@@ -435,7 +398,7 @@
   const minify = (html) => html.replace(/\s*(^|$|[<>])\s*/g, '$1');
   const encode$1 = (arg) => arg.replace(/[<>&"]/g, c => `&#${c.charCodeAt(0)};`);
 
-  var index$9 = ({
+  var index$8 = ({
     doctype: doctype,
     minify: minify,
     encode: encode$1
@@ -569,7 +532,7 @@
 
 
 
-  var index$a = ({
+  var index$9 = ({
     alea: alea,
     generic: generic$1,
     lcg: lcg,
@@ -588,7 +551,7 @@
   const tag = (fnArg, fnStr, fnRes) => mapResult(fnRes, mapStrings(fnStr, mapArgs(fnArg, identity)));
   const identity = ([first, ...rest], ...args) => args.reduce((acc, arg, i) => acc + arg + rest[i], first);
 
-  var index$b = ({
+  var index$a = ({
     mapArgs: mapArgs,
     mapStrings: mapStrings,
     mapResult: mapResult,
@@ -603,15 +566,15 @@
       : ('' + arg).replace(specialChars, '\\$&');
   const re = (flags = '') => raw(tag(escape, x => x, re => RegExp(re, flags)));
   const join = (sep) => (flags = '') => (...parts) => RegExp(parts.map(escape).join(sep), flags);
-  const and$1 = join('');
-  const or$1 = join('|');
+  const and = join('');
+  const or = join('|');
 
-  var index$c = ({
+  var index$b = ({
     escape: escape,
     re: re,
     join: join,
-    and: and$1,
-    or: or$1
+    and: and,
+    or: or
   });
 
   const str = String.fromCodePoint;
@@ -668,7 +631,7 @@
   const monospace = replace([re_AZ, chr => str(0x1d670 + idx_az(chr))], [re_az, chr => str(0x1d68a + idx_az(chr))], [re_09, chr => str(0x1d7f6 + idx_09(chr))]);
   const doubleStruck = replace([re_AZ, chr => str(0x1d538 + idx_az(chr))], [re_az, chr => str(0x1d552 + idx_az(chr))], [re_09, chr => str(0x1d7d8 + idx_09(chr))]);
 
-  var index$d = ({
+  var index$c = ({
     fullwidth: fullwidth,
     regional: regional,
     monospace: monospace,
@@ -767,8 +730,8 @@
 
 
 
-  var index$e = ({
-    styles: index$d,
+  var index$d = ({
+    styles: index$c,
     format: format$1,
     template: template,
     levenshtein: levenshtein,
@@ -783,29 +746,27 @@
               return arg;
   };
 
-  var index$f = ({
+  var index$e = ({
     tuple: tuple,
     firstNonNull: firstNonNull
   });
 
   exports.array = index$1;
-  exports.base = index$2;
   exports.bayer = index$2;
-  exports.braille = index$4;
-  exports.color = index$5;
-  exports.dom = index$7;
-  exports.fp = index$3;
-  exports.hash = index$8;
-  exports.html = index$9;
+  exports.braille = index$3;
+  exports.color = index$4;
+  exports.dom = index$6;
+  exports.hash = index$7;
+  exports.html = index$8;
   exports.math = index;
-  exports.object = index$6;
-  exports.prng = index$a;
-  exports.re = index$c;
-  exports.tag = index$b;
-  exports.text = index$e;
-  exports.util = index$f;
+  exports.object = index$5;
+  exports.prng = index$9;
+  exports.re = index$b;
+  exports.tag = index$a;
+  exports.text = index$d;
+  exports.util = index$e;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
+}));
 //# sourceMappingURL=wheels.js.map
