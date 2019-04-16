@@ -1,10 +1,8 @@
 import { imul } from '../math'
 
 const state = (...state: number[]) => {
-  for (let n = state[0], i = 1; i < 8; i++) {
-    n = n ^ n>>>30
-    n = state[i & 3] ^= i + imul(n, 0x6C078965)
-  }
+  for (let n = state[0], i = 1; i < 8; i++)
+    n = state[i & 3] ^= i + imul(n ^= n>>>30, 0x6C078965)
   return state
 }
 

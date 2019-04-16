@@ -2,8 +2,7 @@ import { mt } from './mt'
 
 describe('mersenne twister', () => {
   it('should return the right values', () => {
-    const actual = Array
-      .from(Array(700), mt(1131464071))
+    const received = Array.from(Array(700), mt(1131464071))
 
     const expected = [
       0xd1e6e2f8, 0x41af0ab5, 0x40270f88, 0xafbd4a73, 0xe205abab, 0xa0c88499, 0x775ae494, 0x1df98060, 0xcc8cbc75, 0x3e0087c2,
@@ -78,6 +77,6 @@ describe('mersenne twister', () => {
       0x7cf2ec9b, 0xd8217f4d, 0x1aed744e, 0x5cb746ef, 0xd1467d26, 0xfdf85f31, 0x4bfd9721, 0xa8353844, 0x56e375b1, 0x1b6c0e20
     ]
 
-    expect(actual).toEqual(expected)
+    expect(received).toEqual(expected)
   })
 })

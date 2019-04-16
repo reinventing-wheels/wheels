@@ -7,8 +7,8 @@ export const
   PHI = 5 ** .5 * .5 + .5
 
 export const
-  e = E,
   ε = EPSILON,
+  e = E,
   π = PI,
   τ = TAU,
   ϕ = PHI

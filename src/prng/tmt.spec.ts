@@ -2,7 +2,7 @@ import { tmt } from './tmt'
 
 describe('tiny mersenne twister', () => {
   it('should return the right values', () => {
-    const actual = Array
+    const received = Array
       .from(Array(58), tmt(1, 0x8f7011ee, 0xfc78ff1f, 0x3793fdff))
       .slice(8)
 
@@ -19,6 +19,6 @@ describe('tiny mersenne twister', () => {
       0xc9be9359, 0x66b590d2, 0xe679f4fc, 0x1f1a606d, 0x88a525a6
     ]
 
-    expect(actual).toEqual(expected)
+    expect(received).toEqual(expected)
   })
 })
