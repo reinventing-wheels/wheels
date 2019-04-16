@@ -1,4 +1,4 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.smoothstep = t => t * t * (3 - 2 * t), exports.smootherstep = t => t * t * t * (t * (t * 6 - 15) + 10);
+exports.smoothstep = t => t * t * (3 - t * 2), exports.smootherstep = t => t * t * t * (t * (t * 6 - 15) + 10), exports.smootheststep = t => t * t * t * t * (t * (t * (70 - t * 20) - 84) + 35);
 exports.linear = t => t, exports.in2 = t => t * t, exports.in3 = t => t * t * t, exports.in4 = t => t * t * t * t, exports.in5 = t => t * t * t * t * t, exports.out2 = t => t * (2 - t), exports.out3 = t => (--t) * t * t + 1, exports.out4 = t => 1 - (--t) * t * t * t, exports.out5 = t => 1 + (--t) * t * t * t * t, exports.inOut2 = t => t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t, exports.inOut3 = t => t < .5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1, exports.inOut4 = t => t < .5 ? 8 * t * t * t * t : 1 - 8 * (--t) * t * t * t, exports.inOut5 = t => t < .5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t;

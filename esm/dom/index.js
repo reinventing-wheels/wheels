@@ -1,6 +1,6 @@
 import { overwrite } from '../object';
-export const element = name => options => overwrite(document.createElement(name), options);
+export const context2d = (...attributes) => (...settings) => overwrite(element('canvas')(...attributes).getContext('2d'), ...settings);
+export const element = (name) => (...attributes) => overwrite(document.createElement(name), ...attributes);
 export const append = (parent) => (...children) => children.forEach(child => parent.appendChild(child));
 export const prevent = (fn) => (event) => { event.preventDefault(); fn && fn(event); };
-export const frame = () => new Promise(resolve => requestAnimationFrame(resolve));
-export const context2d = (options) => element('canvas')(options).getContext('2d');
+export const raf = () => new Promise(resolve => requestAnimationFrame(resolve));

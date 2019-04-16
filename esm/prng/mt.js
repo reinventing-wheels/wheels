@@ -6,10 +6,8 @@ const UPPER_MASK = 0x80000000;
 const LOWER_MASK = 0x7fffffff;
 export const mt = (seed = 1) => {
     const state = new Uint32Array(N);
-    for (let n = state[0] = seed, i = 1; i < N; i++) {
-        n = n ^ n >>> 30;
-        n = state[i] = i + imul(n, 0x6C078965);
-    }
+    for (let n = state[0] = seed, i = 1; i < N; i++)
+        n = state[i] = i + imul(n ^= n >>> 30, 0x6C078965);
     let index = N;
     return () => {
         const a = state[index %= N];

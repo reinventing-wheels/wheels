@@ -1,3 +1,3 @@
-export declare type IEasing = (t: number) => number;
-export declare const smoothstep: IEasing, smootherstep: IEasing;
-export declare const linear: IEasing, in2: IEasing, in3: IEasing, in4: IEasing, in5: IEasing, out2: IEasing, out3: IEasing, out4: IEasing, out5: IEasing, inOut2: IEasing, inOut3: IEasing, inOut4: IEasing, inOut5: IEasing;
+export declare type fn = (t: number) => number;
+export declare const smoothstep: fn, smootherstep: fn, smootheststep: fn;
+export declare const linear: fn, in2: fn, in3: fn, in4: fn, in5: fn, out2: fn, out3: fn, out4: fn, out5: fn, inOut2: fn, inOut3: fn, inOut4: fn, inOut5: fn;

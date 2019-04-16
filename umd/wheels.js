@@ -4,7 +4,7 @@
   factory(global.wheels = {});
 }(typeof self !== 'undefined' ? self : this, function (exports) { 'use strict';
 
-  const smoothstep = t => t * t * (3 - 2 * t), smootherstep = t => t * t * t * (t * (t * 6 - 15) + 10);
+  const smoothstep = t => t * t * (3 - t * 2), smootherstep = t => t * t * t * (t * (t * 6 - 15) + 10), smootheststep = t => t * t * t * t * (t * (t * (70 - t * 20) - 84) + 35);
   const linear = t => t, in2 = t => t * t, in3 = t => t * t * t, in4 = t => t * t * t * t, in5 = t => t * t * t * t * t, out2 = t => t * (2 - t), out3 = t => (--t) * t * t + 1, out4 = t => 1 - (--t) * t * t * t, out5 = t => 1 + (--t) * t * t * t * t, inOut2 = t => t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t, inOut3 = t => t < .5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1, inOut4 = t => t < .5 ? 8 * t * t * t * t : 1 - 8 * (--t) * t * t * t, inOut5 = t => t < .5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t;
 
   const { abs, acos, acosh, asin, asinh, atan, atan2, atanh, cbrt, ceil, clz32, cos, cosh, exp, expm1, floor, fround, hypot, imul, log, log10, log1p, log2, max, min, pow, random, round, sign, sin, sinh, sqrt, tan, tanh, trunc, E, LN10, LN2, LOG10E, LOG2E, PI, SQRT1_2, SQRT2 } = Math;
@@ -15,7 +15,7 @@
   const cover = fit(max);
 
   const TAU = 2 * PI, PHI = 5 ** .5 * .5 + .5;
-  const e = E, ε = EPSILON, π = PI, τ = TAU, ϕ = PHI;
+  const ε = EPSILON, e = E, π = PI, τ = TAU, ϕ = PHI;
   const add = (a, b) => a + b, sub = (a, b) => a - b, mul = (a, b) => a * b, div = (a, b) => a / b;
   const clamp = (a, b, t) => min(max(a, t), b), lerp = (a, b, t) => a + t * (b - a), norm = (a, b, t) => (t - a) / (b - a), map = (aʹ, bʹ, aʺ, bʺ, t) => lerp(aʺ, bʺ, norm(aʹ, bʹ, t));
 
@@ -39,6 +39,7 @@
   var index = ({
     smoothstep: smoothstep,
     smootherstep: smootherstep,
+    smootheststep: smootheststep,
     linear: linear,
     in2: in2,
     in3: in3,
@@ -56,8 +57,8 @@
     cover: cover,
     TAU: TAU,
     PHI: PHI,
-    e: e,
     ε: ε,
+    e: e,
     π: π,
     τ: τ,
     ϕ: ϕ,
@@ -269,7 +270,7 @@
     b: b$1
   });
 
-  const xyz = (x, y, z) => {
+  const core = (x, y, z) => {
       const cosx = cos(x), sinx = sin(x);
       const r = clamp(0, 1, z + y * (-0.14861 * cosx + +1.78277 * sinx));
       const g = clamp(0, 1, z + y * (-0.29227 * cosx + -0.90649 * sinx));
@@ -280,8 +281,10 @@
       const h = hʹ + t * (hʺ - hʹ);
       const s = sʹ + t * (sʺ - sʹ);
       const l = lʹ + t * (lʺ - lʹ);
-      return xyz(τ * (h + 1 / 3), .5 * s * l * (1 - l), l);
+      return core(τ * (h + 1 / 3), .5 * s * l * (1 - l), l);
   };
+  const classic = (start = .5, rots = -1.5, hue = 1) => (t) => core(τ * (start / 3 + rots * t), .5 * hue * t * (1 - t), t);
+  const standard = (t) => core(π * (1 / 3 - 3 * t), .5 * t * (1 - t), t);
 
   const hsl = (h, s, l) => {
       const hʹ = h % 1, sʹ = s * (.5 - abs(.5 - l));
@@ -312,7 +315,10 @@
 
   var index$4 = ({
     srgb: srgb$1,
+    core: core,
     cubehelix: cubehelix,
+    classic: classic,
+    standard: standard,
     hsl: hsl,
     random: random$1,
     lum: lum$2,
@@ -348,18 +354,18 @@
     proto: proto
   });
 
-  const element = name => options => overwrite(document.createElement(name), options);
+  const context2d = (...attributes) => (...settings) => overwrite(element('canvas')(...attributes).getContext('2d'), ...settings);
+  const element = (name) => (...attributes) => overwrite(document.createElement(name), ...attributes);
   const append = (parent) => (...children) => children.forEach(child => parent.appendChild(child));
   const prevent = (fn) => (event) => { event.preventDefault(); fn && fn(event); };
-  const frame = () => new Promise(resolve => requestAnimationFrame(resolve));
-  const context2d = (options) => element('canvas')(options).getContext('2d');
+  const raf = () => new Promise(resolve => requestAnimationFrame(resolve));
 
   var index$6 = ({
+    context2d: context2d,
     element: element,
     append: append,
     prevent: prevent,
-    frame: frame,
-    context2d: context2d
+    raf: raf
   });
 
   const generic = (polynomial) => (bytes, previous = 0) => {
@@ -442,10 +448,8 @@
   const LOWER_MASK = 0x7fffffff;
   const mt = (seed = 1) => {
       const state = new Uint32Array(N);
-      for (let n = state[0] = seed, i = 1; i < N; i++) {
-          n = n ^ n >>> 30;
-          n = state[i] = i + imul(n, 0x6C078965);
-      }
+      for (let n = state[0] = seed, i = 1; i < N; i++)
+          n = state[i] = i + imul(n ^= n >>> 30, 0x6C078965);
       let index = N;
       return () => {
           const a = state[index %= N];
@@ -462,10 +466,8 @@
   };
 
   const state = (...state) => {
-      for (let n = state[0], i = 1; i < 8; i++) {
-          n = n ^ n >>> 30;
-          n = state[i & 3] ^= i + imul(n, 0x6C078965);
-      }
+      for (let n = state[0], i = 1; i < 8; i++)
+          n = state[i & 3] ^= i + imul(n ^= n >>> 30, 0x6C078965);
       return state;
   };
   const tmt = (seed = 1, mat1 = 0x8F7011EE, mat2 = 0xFC78FF1F, tmat = 0x3793FDFF) => {

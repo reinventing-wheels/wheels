@@ -2,10 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const math_1 = require("../math");
 const state = (...state) => {
-    for (let n = state[0], i = 1; i < 8; i++) {
-        n = n ^ n >>> 30;
-        n = state[i & 3] ^= i + math_1.imul(n, 0x6C078965);
-    }
+    for (let n = state[0], i = 1; i < 8; i++)
+        n = state[i & 3] ^= i + math_1.imul(n ^= n >>> 30, 0x6C078965);
     return state;
 };
 exports.tmt = (seed = 1, mat1 = 0x8F7011EE, mat2 = 0xFC78FF1F, tmat = 0x3793FDFF) => {
