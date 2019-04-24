@@ -1,12 +1,13 @@
-import { tag, brackets } from './format'
+import { f, brackets } from './format'
 
 describe('format', () => {
+  type User = typeof user
   const user = { firstName: 'John', lastName: 'Doe' }
   const expected = 'Hello John Doe!'
 
-  describe('tag', () => {
+  describe('f', () => {
     it('should work', () => {
-      const render = tag<typeof user>`Hello ${u => `${u.firstName} ${u.lastName}`}!`
+      const render = f`Hello ${(u: User) => `${u.firstName} ${u.lastName}`}!`
       expect(render(user)).toBe(expected)
     })
   })
