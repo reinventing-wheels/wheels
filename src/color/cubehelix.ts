@@ -9,7 +9,7 @@ export const core = (x: number, y: number, z: number) => {
   return rgb(r, g, b)
 }
 
-export const cubehelix = (
+export const lerp = (
   hʹ = -1/6, sʹ = 1, lʹ = 0,
   hʺ = -5/3, sʺ = 1, lʺ = 1
 ) => (t: number) => {
