@@ -1,0 +1,39 @@
+import { and, or } from '../re'
+import { proto } from '../object'
+
+export const compiler = (exprʹ = '{', exprʺ = '}', ctrlʹ = '{#', ctrlʺ = '#}') => {
+  const expr = and()(exprʹ, /(?<expr>[^]*?)/, exprʺ)
+  const ctrl = and()(ctrlʹ, /(?<ctrl>[^]*?)/, ctrlʺ)
+
+  // match the longest tag first to avoid ambiguity
+  const re = exprʹ.length > ctrlʹ.length
+    ? or('ug')(expr, ctrl)
+    : or('ug')(ctrl, expr)
+
+  return (macro: string, locals = {}, ref = '$', acc = 'Σ') => {
+    let ops = ''
+
+    for (let op = '=', cursor = 0;;) {
+      const match = re.exec(macro)
+      const part = match
+        ? macro.slice(cursor, cursor = match.index)
+        : macro.slice(cursor)
+
+      ops += op + JSON.stringify(part)
+
+      if (!match)
+        break
+
+      const { expr, ctrl } = match.groups!
+      ops += ctrl ? `;${ctrl};` : `+(${expr})`
+      op = ctrl ? `${acc}+=` : '+'
+      cursor += match[0].length
+    }
+
+    const body = `let ${acc}${ops};return ${acc}`
+    const fn = new Function(`{${[...proto(locals)]}}`, ref, body)
+    return fn.bind(null, locals) as (context?: {}) => string
+  }
+}
+
+export const compile = compiler()
