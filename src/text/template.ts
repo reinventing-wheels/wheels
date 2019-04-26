@@ -1,5 +1,7 @@
-export const renderer = (tmpl: string, arg = '$') =>
-  new Function(arg, 'return `' + tmpl + '`')
+import { proto } from '../object'
 
-export const render = (tmpl: string, obj: object, arg = '$') =>
-  new Function(arg, '{' + Object.keys(obj) + '}', 'return `' + tmpl + '`')(obj, obj)
+export const renderer = (tmpl: string, locals = {}, ref = '$'): (context?: {}) => string =>
+  new Function(`{${[...proto(locals)]}}`, ref, `return \`${tmpl}\``).bind(null, locals)
+
+export const render = (tmpl: string, context = {}, ref = '$'): string =>
+  new Function(`{${[...proto(context)]}}`, ref, `return \`${tmpl}\``)(context, context)
