@@ -1,6 +1,6 @@
 import * as srgb from './srgb';
-export { srgb };
-export * from './cubehelix';
+import * as cubehelix from './cubehelix';
+export { cubehelix, srgb };
 export * from './hsl';
 export * from './rgb';
 export * from './sinebow';

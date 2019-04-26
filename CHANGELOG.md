@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/reinventing-wheels/wheels/compare/v0.5.0...v0.6.0) (2019-04-26)
+
+
+### Bug Fixes
+
+* fix `color/cubehelix` exports ([9f2999c](https://github.com/reinventing-wheels/wheels/commit/9f2999c))
+
+
+### Features
+
+* add `text/macro` ([2e68be2](https://github.com/reinventing-wheels/wheels/commit/2e68be2))
+* improve `text/template` ([bf68a1c](https://github.com/reinventing-wheels/wheels/commit/bf68a1c))
+
+
+
 <a name="0.5.0"></a>
 # [0.5.0](https://github.com/reinventing-wheels/wheels/compare/v0.4.0...v0.5.0) (2019-04-16)
 

@@ -1,4 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderer = (tmpl, arg = '$') => new Function(arg, 'return `' + tmpl + '`');
-exports.render = (tmpl, obj, arg = '$') => new Function(arg, '{' + Object.keys(obj) + '}', 'return `' + tmpl + '`')(obj, obj);
+const object_1 = require("../object");
+exports.renderer = (tmpl, locals = {}, ref = '$') => new Function(`{${[...object_1.proto(locals)]}}`, ref, `return \`${tmpl}\``).bind(null, locals);
+exports.render = (tmpl, context = {}, ref = '$') => new Function(`{${[...object_1.proto(context)]}}`, ref, `return \`${tmpl}\``)(context, context);

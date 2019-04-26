@@ -277,7 +277,7 @@
       const b = clamp(0, 1, z + y * (+1.97294 * cosx));
       return rgb$2(r, g, b);
   };
-  const cubehelix = (hʹ = -1 / 6, sʹ = 1, lʹ = 0, hʺ = -5 / 3, sʺ = 1, lʺ = 1) => (t) => {
+  const lerp$1 = (hʹ = -1 / 6, sʹ = 1, lʹ = 0, hʺ = -5 / 3, sʺ = 1, lʺ = 1) => (t) => {
       const h = hʹ + t * (hʺ - hʹ);
       const s = sʹ + t * (sʺ - sʹ);
       const l = lʹ + t * (lʺ - lʹ);
@@ -285,6 +285,13 @@
   };
   const classic = (start = .5, rots = -1.5, hue = 1) => (t) => core(τ * (start / 3 + rots * t), .5 * hue * t * (1 - t), t);
   const standard = (t) => core(π * (1 / 3 - 3 * t), .5 * t * (1 - t), t);
+
+  var cubehelix = ({
+    core: core,
+    lerp: lerp$1,
+    classic: classic,
+    standard: standard
+  });
 
   const hsl = (h, s, l) => {
       const hʹ = h % 1, sʹ = s * (.5 - abs(.5 - l));
@@ -314,11 +321,8 @@
 
 
   var index$4 = ({
-    srgb: srgb$1,
-    core: core,
     cubehelix: cubehelix,
-    classic: classic,
-    standard: standard,
+    srgb: srgb$1,
     hsl: hsl,
     random: random$1,
     lum: lum$2,
@@ -546,6 +550,23 @@
     xs4: xs4
   });
 
+  const specialChars = /[\\^$.*+?()[\]{}|]/g;
+  const escape = (arg) => arg instanceof RegExp ? arg.source : ('' + arg).replace(specialChars, '\\$&');
+  const re = (flags = '') => ([first, ...rest], ...args) => new RegExp(args.reduce((acc, arg, i) => acc + escape(arg) + rest[i], first), flags);
+  const join = (sep) => (flags = '') => (...parts) => new RegExp(parts.map(escape).join(sep), flags);
+  const and = join('');
+  const or = join('|');
+  const r$2 = re();
+
+  var index$a = ({
+    escape: escape,
+    re: re,
+    join: join,
+    and: and,
+    or: or,
+    r: r$2
+  });
+
   const mapArgs = (fn, tag) => (strings, ...args) => tag(strings, ...args.map(fn));
   const mapStrings = (fn, tag) => (strings, ...args) => tag(strings.map(fn), ...args);
   const mapResult = (fn, tag) => (strings, ...args) => fn(tag(strings, ...args));
@@ -553,30 +574,13 @@
   const tag = (fnArg, fnStr, fnRes) => mapResult(fnRes, mapStrings(fnStr, mapArgs(fnArg, identity)));
   const identity = ([first, ...rest], ...args) => args.reduce((acc, arg, i) => acc + arg + rest[i], first);
 
-  var index$a = ({
+  var index$b = ({
     mapArgs: mapArgs,
     mapStrings: mapStrings,
     mapResult: mapResult,
     raw: raw,
     tag: tag,
     identity: identity
-  });
-
-  const specialChars = /[\\^$.*+?()[\]{}|]/g;
-  const escape = (arg) => arg instanceof RegExp
-      ? arg.source
-      : ('' + arg).replace(specialChars, '\\$&');
-  const re = (flags = '') => raw(tag(escape, x => x, re => RegExp(re, flags)));
-  const join = (sep) => (flags = '') => (...parts) => RegExp(parts.map(escape).join(sep), flags);
-  const and = join('');
-  const or = join('|');
-
-  var index$b = ({
-    escape: escape,
-    re: re,
-    join: join,
-    and: and,
-    or: or
   });
 
   const str = String.fromCodePoint;
@@ -644,7 +648,7 @@
     sansSerif: sansSerif
   });
 
-  const tag$1 = ([head, ...tail], ...fns) => obj => fns.reduce((acc, fn, i) => acc + fn(obj) + tail[i], head);
+  const f$1 = ([head, ...tail], ...fns) => (arg) => fns.reduce((acc, fn, i) => acc + fn(arg) + tail[i], head);
   const format = (re) => (tmpl) => (...args) => tmpl.replace(re, (_, path) => get(args, path));
   const brackets = format(/{(.*?)}/g);
   const hashBrackets = format(/#{(.*?)}/g);
@@ -652,7 +656,7 @@
   const doubleBrackets = format(/{{(.*?)}}/g);
 
   var format$1 = ({
-    tag: tag$1,
+    f: f$1,
     format: format,
     brackets: brackets,
     hashBrackets: hashBrackets,
@@ -660,8 +664,41 @@
     doubleBrackets: doubleBrackets
   });
 
-  const renderer = (tmpl, arg = '$') => new Function(arg, 'return `' + tmpl + '`');
-  const render$1 = (tmpl, obj, arg = '$') => new Function(arg, '{' + Object.keys(obj) + '}', 'return `' + tmpl + '`')(obj, obj);
+  const compiler = (exprʹ = '{', exprʺ = '}', ctrlʹ = '{#', ctrlʺ = '#}') => {
+      const expr = and()(exprʹ, /(?<expr>[^]*?)/, exprʺ);
+      const ctrl = and()(ctrlʹ, /(?<ctrl>[^]*?)/, ctrlʺ);
+      const re$$1 = exprʹ.length > ctrlʹ.length
+          ? or('ug')(expr, ctrl)
+          : or('ug')(ctrl, expr);
+      return (macro, locals = {}, ref = '$', acc = 'Σ') => {
+          let ops = '';
+          for (let op = '=', cursor = 0;;) {
+              const match = re$$1.exec(macro);
+              const part = match
+                  ? macro.slice(cursor, cursor = match.index)
+                  : macro.slice(cursor);
+              ops += op + JSON.stringify(part);
+              if (!match)
+                  break;
+              const { expr, ctrl } = match.groups;
+              ops += ctrl ? `;${ctrl};` : `+(${expr})`;
+              op = ctrl ? `${acc}+=` : '+';
+              cursor += match[0].length;
+          }
+          const body = `let ${acc}${ops};return ${acc}`;
+          const fn = new Function(`{${[...proto(locals)]}}`, ref, body);
+          return fn.bind(null, locals);
+      };
+  };
+  const compile = compiler();
+
+  var macro = ({
+    compiler: compiler,
+    compile: compile
+  });
+
+  const renderer = (tmpl, locals = {}, ref = '$') => new Function(`{${[...proto(locals)]}}`, ref, `return \`${tmpl}\``).bind(null, locals);
+  const render$1 = (tmpl, context = {}, ref = '$') => new Function(`{${[...proto(context)]}}`, ref, `return \`${tmpl}\``)(context, context);
 
   var template = ({
     renderer: renderer,
@@ -735,6 +772,7 @@
   var index$d = ({
     styles: index$c,
     format: format$1,
+    macro: macro,
     template: template,
     levenshtein: levenshtein,
     sanitize: sanitize,
@@ -763,8 +801,8 @@
   exports.math = index;
   exports.object = index$5;
   exports.prng = index$9;
-  exports.re = index$b;
-  exports.tag = index$a;
+  exports.re = index$a;
+  exports.tag = index$b;
   exports.text = index$d;
   exports.util = index$e;
 

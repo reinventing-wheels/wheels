@@ -7,7 +7,7 @@ export const core = (x, y, z) => {
     const b = clamp(0, 1, z + y * (+1.97294 * cosx));
     return rgb(r, g, b);
 };
-export const cubehelix = (hʹ = -1 / 6, sʹ = 1, lʹ = 0, hʺ = -5 / 3, sʺ = 1, lʺ = 1) => (t) => {
+export const lerp = (hʹ = -1 / 6, sʹ = 1, lʹ = 0, hʺ = -5 / 3, sʺ = 1, lʺ = 1) => (t) => {
     const h = hʹ + t * (hʺ - hʹ);
     const s = sʹ + t * (sʺ - sʹ);
     const l = lʹ + t * (lʺ - lʹ);

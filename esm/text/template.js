@@ -1,2 +1,3 @@
-export const renderer = (tmpl, arg = '$') => new Function(arg, 'return `' + tmpl + '`');
-export const render = (tmpl, obj, arg = '$') => new Function(arg, '{' + Object.keys(obj) + '}', 'return `' + tmpl + '`')(obj, obj);
+import { proto } from '../object';
+export const renderer = (tmpl, locals = {}, ref = '$') => new Function(`{${[...proto(locals)]}}`, ref, `return \`${tmpl}\``).bind(null, locals);
+export const render = (tmpl, context = {}, ref = '$') => new Function(`{${[...proto(context)]}}`, ref, `return \`${tmpl}\``)(context, context);

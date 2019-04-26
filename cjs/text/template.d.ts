@@ -1,2 +1,2 @@
-export declare const renderer: (tmpl: string, arg?: string) => Function;
-export declare const render: (tmpl: string, obj: object, arg?: string) => any;
+export declare const renderer: (tmpl: string, locals?: {}, ref?: string) => (context?: {} | undefined) => string;
+export declare const render: (tmpl: string, context?: {}, ref?: string) => string;

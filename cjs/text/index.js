@@ -7,6 +7,8 @@ const styles = require("./styles");
 exports.styles = styles;
 const format = require("./format");
 exports.format = format;
+const macro = require("./macro");
+exports.macro = macro;
 const template = require("./template");
 exports.template = template;
 __export(require("./levenshtein"));

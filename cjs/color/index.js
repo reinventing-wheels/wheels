@@ -5,7 +5,8 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const srgb = require("./srgb");
 exports.srgb = srgb;
-__export(require("./cubehelix"));
+const cubehelix = require("./cubehelix");
+exports.cubehelix = cubehelix;
 __export(require("./hsl"));
 __export(require("./rgb"));
 __export(require("./sinebow"));
