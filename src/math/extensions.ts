@@ -1,6 +1,5 @@
 import { EPSILON, PI, E, min, max } from './native'
-
-export type n = number
+import { N } from '../types'
 
 export const
   TAU = 2 * PI,
@@ -14,13 +13,13 @@ export const
   ϕ = PHI
 
 export const
-  add = (a: n, b: n) => a + b,
-  sub = (a: n, b: n) => a - b,
-  mul = (a: n, b: n) => a * b,
-  div = (a: n, b: n) => a / b
+  add = (a: N, b: N) => a + b,
+  sub = (a: N, b: N) => a - b,
+  mul = (a: N, b: N) => a * b,
+  div = (a: N, b: N) => a / b
 
 export const
-  clamp = (a: n, b: n, t: n) => min(max(a, t), b),
-  lerp  = (a: n, b: n, t: n) => a + t * (b - a),
-  norm  = (a: n, b: n, t: n) => (t - a) / (b - a),
-  map   = (aʹ: n, bʹ: n, aʺ: n, bʺ: n, t: n) => lerp(aʺ, bʺ, norm(aʹ, bʹ, t))
+  clamp = (a: N, b: N, t: N) => min(max(a, t), b),
+  lerp  = (a: N, b: N, t: N) => a + t * (b - a),
+  norm  = (a: N, b: N, t: N) => (t - a) / (b - a),
+  map   = (aʹ: N, bʹ: N, aʺ: N, bʺ: N, t: N) => lerp(aʺ, bʺ, norm(aʹ, bʹ, t))
