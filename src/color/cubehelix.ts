@@ -9,18 +9,12 @@ export const core = (x: number, y: number, z: number) => {
   return rgb(r, g, b)
 }
 
-export const lerp = (
-  hʹ = -1/6, sʹ = 1, lʹ = 0,
-  hʺ = -5/3, sʺ = 1, lʺ = 1
-) => (t: number) => {
-  const h = hʹ + t*(hʺ - hʹ)
-  const s = sʹ + t*(sʺ - sʹ)
-  const l = lʹ + t*(lʺ - lʹ)
-  return core(τ*(h + 1/3), .5*s*l*(1 - l), l)
-}
-
-export const classic = (start = .5, rots = -1.5, hue = 1) =>
+export const factory = (start = .5, rots = -1.5, hue = 1) =>
   (t: number) => core(τ*(start/3 + rots*t), .5*hue*t*(1 - t), t)
 
 export const standard = (t: number) =>
   core(π*(1/3 - 3*t), .5*t*(1 - t), t)
+
+// standard range: (-1/6, 1, 0) -> (-5/3, 1, 1)
+export const hsl = (h: number, s: number, l: number) =>
+  core(τ*(h + 1/3), .5*s*l*(1 - l), l)
