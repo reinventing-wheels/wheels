@@ -11,3 +11,5 @@ export const shuffle = <T>(items: Mutable<ArrayLike<T>>): ArrayLike<T> => {
   }
   return items
 }
+
+export * from './sort-indices'
