@@ -13,3 +13,5 @@ export const proto = <T>(object: T) => {
     Object.getOwnPropertyNames(o).forEach(prop => props.add(prop as any))
   return props
 }
+
+export * from './deep-copy'
