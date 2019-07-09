@@ -2,7 +2,7 @@ import { renderer, render } from './template'
 
 describe('template', () => {
   describe('renderer', () => {
-    it('should support locals and context', () => {
+    it('should support scope and context', () => {
       const render = renderer('√${n} = ${sqrt(n)}', Math, 'n')
 
       expect(render(16)).toBe('√16 = 4')

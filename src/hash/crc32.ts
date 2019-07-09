@@ -1,4 +1,4 @@
-export const generic = (polynomial: number) => (bytes: ArrayLike<number>, previous = 0) => {
+export const factory = (polynomial: number) => (bytes: ArrayLike<number>, previous = 0) => {
   let hash = ~previous
   for (let j, i = 0; i < bytes.length; i++)
     for (hash ^= bytes[i], j = 8; j--;)
@@ -6,5 +6,5 @@ export const generic = (polynomial: number) => (bytes: ArrayLike<number>, previo
   return ~hash >>> 0
 }
 
-export const crc32  = generic(0xEDB88320)
-export const crc32c = generic(0x82F63B78)
+export const crc32  = factory(0xEDB88320)
+export const crc32c = factory(0x82F63B78)

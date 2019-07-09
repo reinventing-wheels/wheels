@@ -12,7 +12,7 @@ describe('macro', () => {
     expect(compiler('<', '>', '<<', '>>')('<1><<;>>')()).toBe('1')
   })
 
-  it('should support locals and context', () => {
+  it('should support scope and context', () => {
     const render = compile('√{n} = {sqrt(n)}', Math, 'n')
 
     expect(render(16)).toBe('√16 = 4')

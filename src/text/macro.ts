@@ -10,7 +10,7 @@ export const compiler = (exprʹ = '{', exprʺ = '}', ctrlʹ = '{#', ctrlʺ = '#}
     ? or('ug')(expr, ctrl)
     : or('ug')(ctrl, expr)
 
-  return (macro: string, locals = {}, ref = '$', acc = 'Σ') => {
+  return (macro: string, scope = {}, ref = '$', acc = 'Σ') => {
     let ops = ''
 
     for (let op = '=', cursor = 0;;) {
@@ -31,8 +31,8 @@ export const compiler = (exprʹ = '{', exprʺ = '}', ctrlʹ = '{#', ctrlʺ = '#}
     }
 
     const body = `let ${acc}${ops};return ${acc}`
-    const fn = new Function(`{${[...proto(locals)]}}`, ref, body)
-    return fn.bind(null, locals) as (context?: {}) => string
+    const fn = new Function(`{${[...proto(scope)]}}`, ref, body)
+    return fn.bind(null, scope) as (context?: {}) => string
   }
 }
 
