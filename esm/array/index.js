@@ -7,3 +7,4 @@ export const shuffle = (items) => {
     }
     return items;
 };
+export * from './sort-indices';

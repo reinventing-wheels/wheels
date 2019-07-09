@@ -8,3 +8,4 @@ export const proto = (object) => {
         Object.getOwnPropertyNames(o).forEach(prop => props.add(prop));
     return props;
 };
+export * from './deep-copy';

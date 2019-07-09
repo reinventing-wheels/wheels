@@ -1,4 +1,7 @@
 "use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.extend = Object.assign;
 exports.overwrite = exports.extend;
@@ -10,3 +13,4 @@ exports.proto = (object) => {
         Object.getOwnPropertyNames(o).forEach(prop => props.add(prop));
     return props;
 };
+__export(require("./deep-copy"));

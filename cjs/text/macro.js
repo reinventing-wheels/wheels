@@ -8,7 +8,7 @@ exports.compiler = (exprʹ = '{', exprʺ = '}', ctrlʹ = '{#', ctrlʺ = '#}') =>
     const re = exprʹ.length > ctrlʹ.length
         ? re_1.or('ug')(expr, ctrl)
         : re_1.or('ug')(ctrl, expr);
-    return (macro, locals = {}, ref = '$', acc = 'Σ') => {
+    return (macro, scope = {}, ref = '$', acc = 'Σ') => {
         let ops = '';
         for (let op = '=', cursor = 0;;) {
             const match = re.exec(macro);
@@ -24,8 +24,8 @@ exports.compiler = (exprʹ = '{', exprʺ = '}', ctrlʹ = '{#', ctrlʺ = '#}') =>
             cursor += match[0].length;
         }
         const body = `let ${acc}${ops};return ${acc}`;
-        const fn = new Function(`{${[...object_1.proto(locals)]}}`, ref, body);
-        return fn.bind(null, locals);
+        const fn = new Function(`{${[...object_1.proto(scope)]}}`, ref, body);
+        return fn.bind(null, scope);
     };
 };
 exports.compile = exports.compiler();

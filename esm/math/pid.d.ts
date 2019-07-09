@@ -1,1 +1,1 @@
-export declare const pid: (Kp: number, Ki: number, Kd: number, M?: number) => (PV: number, SP: number, t: number) => number;
+export declare const pid: (Kp: number, Ki: number, Kd: number, M?: number) => (e: number, t: number) => number;

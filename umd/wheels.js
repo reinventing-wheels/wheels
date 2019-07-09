@@ -1,8 +1,8 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  factory(global.wheels = {});
-}(typeof self !== 'undefined' ? self : this, function (exports) { 'use strict';
+  (global = global || self, factory(global.wheels = {}));
+}(this, function (exports) { 'use strict';
 
   const smoothstep = t => t * t * (3 - t * 2), smootherstep = t => t * t * t * (t * (t * 6 - 15) + 10), smootheststep = t => t * t * t * t * (t * (t * (70 - t * 20) - 84) + 35);
   const linear = t => t, in2 = t => t * t, in3 = t => t * t * t, in4 = t => t * t * t * t, in5 = t => t * t * t * t * t, out2 = t => t * (2 - t), out3 = t => (--t) * t * t + 1, out4 = t => 1 - (--t) * t * t * t, out5 = t => 1 + (--t) * t * t * t * t, inOut2 = t => t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t, inOut3 = t => t < .5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1, inOut4 = t => t < .5 ? 8 * t * t * t * t : 1 - 8 * (--t) * t * t * t, inOut5 = t => t < .5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t;
@@ -23,9 +23,8 @@
       let tʹ;
       let eʹ;
       let Σe = 0;
-      return (PV, SP, t) => {
-          const e$$1 = SP - PV;
-          const Δt = t - tʹ || ε;
+      return (e$$1, t) => {
+          const Δt = t - tʹ || MIN_VALUE;
           const Δe = e$$1 - eʹ || 0;
           tʹ = t;
           eʹ = e$$1;
@@ -129,6 +128,9 @@
     pid: pid
   });
 
+  const defaultComparator = (a, b) => (a > b) - (a < b);
+  const sortIndicesByValues = (arr, cmp = defaultComparator) => [...arr.keys()].sort((i, j) => cmp(arr[i], arr[j]));
+
   const pick = (items) => items[items.length * random() | 0];
   const shuffle = (items) => {
       for (let i = items.length; i > 0;) {
@@ -140,7 +142,8 @@
 
   var index$1 = ({
     pick: pick,
-    shuffle: shuffle
+    shuffle: shuffle,
+    sortIndicesByValues: sortIndicesByValues
   });
 
   const at = (x, y, order) => {
@@ -205,6 +208,22 @@
     decode: decode
   });
 
+  const render$1 = (w, h, fn) => {
+      const lines = [];
+      for (let y = 0; y < h; y += 4) {
+          const line = [];
+          for (let x = 0; x < w; x += 2) {
+              const byte = fn(x + 0, y + 0) << 0 | fn(x + 1, y + 0) << 3 |
+                  fn(x + 0, y + 1) << 1 | fn(x + 1, y + 1) << 4 |
+                  fn(x + 0, y + 2) << 2 | fn(x + 1, y + 2) << 5 |
+                  fn(x + 0, y + 3) << 6 | fn(x + 1, y + 3) << 7;
+              line.push(0x2800 | byte);
+          }
+          lines.push(String.fromCharCode(...line));
+      }
+      return lines.join('\n');
+  };
+
   const R = .212655;
   const G = .715158;
   const B = .072187;
@@ -245,6 +264,7 @@
   var index$3 = ({
     canvas: canvas,
     encoding: encoding,
+    render: render$1,
     renderImageData: renderImageData
   });
 
@@ -277,23 +297,18 @@
       const b = clamp(0, 1, z + y * (+1.97294 * cosx));
       return rgb$2(r, g, b);
   };
-  const lerp$1 = (hʹ = -1 / 6, sʹ = 1, lʹ = 0, hʺ = -5 / 3, sʺ = 1, lʺ = 1) => (t) => {
-      const h = hʹ + t * (hʺ - hʹ);
-      const s = sʹ + t * (sʺ - sʹ);
-      const l = lʹ + t * (lʺ - lʹ);
-      return core(τ * (h + 1 / 3), .5 * s * l * (1 - l), l);
-  };
-  const classic = (start = .5, rots = -1.5, hue = 1) => (t) => core(τ * (start / 3 + rots * t), .5 * hue * t * (1 - t), t);
+  const factory = (start = .5, rots = -1.5, hue = 1) => (t) => core(τ * (start / 3 + rots * t), .5 * hue * t * (1 - t), t);
   const standard = (t) => core(π * (1 / 3 - 3 * t), .5 * t * (1 - t), t);
+  const hsl = (h, s, l) => core(τ * (h + 1 / 3), .5 * s * l * (1 - l), l);
 
   var cubehelix = ({
     core: core,
-    lerp: lerp$1,
-    classic: classic,
-    standard: standard
+    factory: factory,
+    standard: standard,
+    hsl: hsl
   });
 
-  const hsl = (h, s, l) => {
+  const hsl$1 = (h, s, l) => {
       const hʹ = h % 1, sʹ = s * (.5 - abs(.5 - l));
       const r = l + sʹ * clamp(-1, 1, 12 * abs((3 / 3 - hʹ) % 1 - .5) - 3);
       const g = l + sʹ * clamp(-1, 1, 12 * abs((4 / 3 - hʹ) % 1 - .5) - 3);
@@ -323,7 +338,7 @@
   var index$4 = ({
     cubehelix: cubehelix,
     srgb: srgb$1,
-    hsl: hsl,
+    hsl: hsl$1,
     random: random$1,
     lum: lum$2,
     hex: hex,
@@ -338,6 +353,19 @@
     mix: mix,
     sinebow: sinebow
   });
+
+  const mapObject = (obj, fn) => {
+      const proto = Object.getPrototypeOf(obj);
+      const props = Object.getOwnPropertyDescriptors(obj);
+      for (const key in props)
+          props[key].value = fn(props[key].value);
+      return Object.create(proto, props);
+  };
+  const deepCopy = (arg) => typeof arg === 'object' && arg !== null
+      ? Array.isArray(arg)
+          ? arg.map(deepCopy)
+          : mapObject(arg, deepCopy)
+      : arg;
 
   const extend = Object.assign;
   const overwrite = extend;
@@ -355,7 +383,8 @@
     overwrite: overwrite,
     copy: copy,
     get: get,
-    proto: proto
+    proto: proto,
+    deepCopy: deepCopy
   });
 
   const context2d = (...attributes) => (...settings) => overwrite(element('canvas')(...attributes).getContext('2d'), ...settings);
@@ -372,15 +401,15 @@
     raf: raf
   });
 
-  const generic = (polynomial) => (bytes, previous = 0) => {
+  const factory$1 = (polynomial) => (bytes, previous = 0) => {
       let hash = ~previous;
       for (let j, i = 0; i < bytes.length; i++)
           for (hash ^= bytes[i], j = 8; j--;)
               hash = hash >>> 1 ^ (hash & 1 && polynomial);
       return ~hash >>> 0;
   };
-  const crc32 = generic(0xEDB88320);
-  const crc32c = generic(0x82F63B78);
+  const crc32 = factory$1(0xEDB88320);
+  const crc32c = factory$1(0x82F63B78);
 
   const joaat = (bytes) => {
       let hash = 0;
@@ -398,7 +427,7 @@
 
 
   var index$7 = ({
-    generic: generic,
+    factory: factory$1,
     crc32: crc32,
     crc32c: crc32c,
     joaat: joaat
@@ -425,11 +454,11 @@
       };
   };
 
-  const generic$1 = (a, c) => (seed = 1) => {
+  const factory$2 = (a, c) => (seed = 1) => {
       let x = seed;
       return () => x = x * a + c >>> 0;
   };
-  const lcg = generic$1(1664525, 1013904223);
+  const lcg = factory$2(1664525, 1013904223);
 
   const lfsr = (seed0 = 0, seed1 = 0, seed2 = 0, seed3 = 0) => {
       let x = seed0 + 0x02;
@@ -540,7 +569,7 @@
 
   var index$9 = ({
     alea: alea,
-    generic: generic$1,
+    factory: factory$2,
     lcg: lcg,
     lfsr: lfsr,
     mt: mt,
@@ -670,7 +699,7 @@
       const re$$1 = exprʹ.length > ctrlʹ.length
           ? or('ug')(expr, ctrl)
           : or('ug')(ctrl, expr);
-      return (macro, locals = {}, ref = '$', acc = 'Σ') => {
+      return (macro, scope = {}, ref = '$', acc = 'Σ') => {
           let ops = '';
           for (let op = '=', cursor = 0;;) {
               const match = re$$1.exec(macro);
@@ -686,8 +715,8 @@
               cursor += match[0].length;
           }
           const body = `let ${acc}${ops};return ${acc}`;
-          const fn = new Function(`{${[...proto(locals)]}}`, ref, body);
-          return fn.bind(null, locals);
+          const fn = new Function(`{${[...proto(scope)]}}`, ref, body);
+          return fn.bind(null, scope);
       };
   };
   const compile = compiler();
@@ -697,12 +726,12 @@
     compile: compile
   });
 
-  const renderer = (tmpl, locals = {}, ref = '$') => new Function(`{${[...proto(locals)]}}`, ref, `return \`${tmpl}\``).bind(null, locals);
-  const render$1 = (tmpl, context = {}, ref = '$') => new Function(`{${[...proto(context)]}}`, ref, `return \`${tmpl}\``)(context, context);
+  const renderer = (tmpl, scope = {}, ref = '$') => new Function(`{${[...proto(scope)]}}`, ref, `return \`${tmpl}\``).bind(null, scope);
+  const render$2 = (tmpl, context = {}, ref = '$') => new Function(`{${[...proto(context)]}}`, ref, `return \`${tmpl}\``)(context, context);
 
   var template = ({
     renderer: renderer,
-    render: render$1
+    render: render$2
   });
 
   const levenshtein = (a, b) => {

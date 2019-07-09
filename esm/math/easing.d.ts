@@ -1,3 +1,3 @@
-export declare type fn = (t: number) => number;
-export declare const smoothstep: fn, smootherstep: fn, smootheststep: fn;
-export declare const linear: fn, in2: fn, in3: fn, in4: fn, in5: fn, out2: fn, out3: fn, out4: fn, out5: fn, inOut2: fn, inOut3: fn, inOut4: fn, inOut5: fn;
+import { N, Fn } from '../types';
+export declare const smoothstep: Fn<N, N>, smootherstep: Fn<N, N>, smootheststep: Fn<N, N>;
+export declare const linear: Fn<N, N>, in2: Fn<N, N>, in3: Fn<N, N>, in4: Fn<N, N>, in5: Fn<N, N>, out2: Fn<N, N>, out3: Fn<N, N>, out4: Fn<N, N>, out5: Fn<N, N>, inOut2: Fn<N, N>, inOut3: Fn<N, N>, inOut4: Fn<N, N>, inOut5: Fn<N, N>;

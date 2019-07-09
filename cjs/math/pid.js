@@ -5,9 +5,8 @@ exports.pid = (Kp, Ki, Kd, M = Infinity) => {
     let tʹ;
     let eʹ;
     let Σe = 0;
-    return (PV, SP, t) => {
-        const e = SP - PV;
-        const Δt = t - tʹ || extended_1.ε;
+    return (e, t) => {
+        const Δt = t - tʹ || extended_1.MIN_VALUE;
         const Δe = e - eʹ || 0;
         tʹ = t;
         eʹ = e;

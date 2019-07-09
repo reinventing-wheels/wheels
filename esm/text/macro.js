@@ -6,7 +6,7 @@ export const compiler = (exprʹ = '{', exprʺ = '}', ctrlʹ = '{#', ctrlʺ = '#}
     const re = exprʹ.length > ctrlʹ.length
         ? or('ug')(expr, ctrl)
         : or('ug')(ctrl, expr);
-    return (macro, locals = {}, ref = '$', acc = 'Σ') => {
+    return (macro, scope = {}, ref = '$', acc = 'Σ') => {
         let ops = '';
         for (let op = '=', cursor = 0;;) {
             const match = re.exec(macro);
@@ -22,8 +22,8 @@ export const compiler = (exprʹ = '{', exprʺ = '}', ctrlʹ = '{#', ctrlʺ = '#}
             cursor += match[0].length;
         }
         const body = `let ${acc}${ops};return ${acc}`;
-        const fn = new Function(`{${[...proto(locals)]}}`, ref, body);
-        return fn.bind(null, locals);
+        const fn = new Function(`{${[...proto(scope)]}}`, ref, body);
+        return fn.bind(null, scope);
     };
 };
 export const compile = compiler();

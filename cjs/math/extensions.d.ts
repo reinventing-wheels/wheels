@@ -1,4 +1,3 @@
-export declare type n = number;
 export declare const TAU: number, PHI: number;
 export declare const ε: number, e: number, π: number, τ: number, ϕ: number;
 export declare const add: (a: number, b: number) => number, sub: (a: number, b: number) => number, mul: (a: number, b: number) => number, div: (a: number, b: number) => number;

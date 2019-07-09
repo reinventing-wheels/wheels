@@ -1,6 +1,19 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [0.7.0](https://github.com/reinventing-wheels/wheels/compare/v0.6.0...v0.7.0) (2019-07-09)
+
+
+### Features
+
+* `math/pid` now accepts error ([bd54818](https://github.com/reinventing-wheels/wheels/commit/bd54818))
+* add `array/sort-indices` ([a800769](https://github.com/reinventing-wheels/wheels/commit/a800769))
+* add `braille/render` ([1b291c3](https://github.com/reinventing-wheels/wheels/commit/1b291c3))
+* add `cubehelix/hsl`, remove `cubehelix/lerp` ([0a6ecac](https://github.com/reinventing-wheels/wheels/commit/0a6ecac))
+* add `object/deep-copy` ([d037288](https://github.com/reinventing-wheels/wheels/commit/d037288))
+
+
 
 <a name="0.6.0"></a>
 # [0.6.0](https://github.com/reinventing-wheels/wheels/compare/v0.5.0...v0.6.0) (2019-04-26)

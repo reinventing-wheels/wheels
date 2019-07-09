@@ -7,4 +7,5 @@ const canvas = require("./canvas");
 exports.canvas = canvas;
 const encoding = require("./encoding");
 exports.encoding = encoding;
+__export(require("./render"));
 __export(require("./render-image-data"));

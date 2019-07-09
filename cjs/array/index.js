@@ -1,4 +1,7 @@
 "use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
 Object.defineProperty(exports, "__esModule", { value: true });
 const math_1 = require("../math");
 exports.pick = (items) => items[items.length * math_1.random() | 0];
@@ -9,3 +12,4 @@ exports.shuffle = (items) => {
     }
     return items;
 };
+__export(require("./sort-indices"));
