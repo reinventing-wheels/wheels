@@ -1,7 +1,7 @@
 // tslint:disable:only-arrow-functions
 import { deepCopy } from './deep-copy'
 
-it('should sort indices by values', () => {
+it('should make a deep copy', () => {
   const symbol = Symbol()
 
   const original = {
