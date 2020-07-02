@@ -20,7 +20,7 @@ export const mul = (rgbʹ: number, rgbʺ: number) => i.rgb(
   f.b(rgbʹ) * i.b(rgbʺ) + .5
 )
 
-export const mix = (rgbʹ: number, rgbʺ: number) => (t: number) => i.rgb(
+export const mix = (rgbʹ: number, rgbʺ: number, t: number) => i.rgb(
   lerp(i.r(rgbʹ), i.r(rgbʺ), t),
   lerp(i.g(rgbʹ), i.g(rgbʺ), t),
   lerp(i.b(rgbʹ), i.b(rgbʺ), t)

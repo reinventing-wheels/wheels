@@ -22,5 +22,3 @@ release: all
 
 node_modules: package.json
 	npm i && touch $@
-
-.PHONY: all lint test clear build release
