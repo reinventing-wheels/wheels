@@ -1,6 +1,6 @@
 PATH := node_modules/.bin:$(PATH)
 
-all: lint test clean build
+all: lint test clear build
 
 lint: node_modules
 	tslint -p .
@@ -8,19 +8,19 @@ lint: node_modules
 test: node_modules
 	jest
 
-clean:
-	rm -rf esm cjs umd
+clear:
+	rm -rf .rpt2_cache dist
 
 build: node_modules
-	tsc -d -m esnext --outDir esm
-	tsc -d -m commonjs --outDir cjs
+	tsc -m esnext --outDir dist/esm
+	tsc -m commonjs --outDir dist/cjs
 	rollup -c
 
 release: all
-	git add -A
+	git add -A src dist
 	standard-version -a
 
 node_modules: package.json
 	npm i && touch $@
 
-.PHONY: all lint test clean build release
+.PHONY: all lint test clear build release

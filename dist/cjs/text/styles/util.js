@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.replace = exports.re_fw = exports.re_aZ = exports.re_AZ = exports.re_az = exports.re_09 = exports.idx_09 = exports.idx_az = exports.idx = exports.str = void 0;
+exports.str = String.fromCodePoint;
+exports.idx = (chr) => chr.codePointAt(0);
+exports.idx_az = (chr) => 31 & exports.idx(chr) - 1;
+exports.idx_09 = (chr) => 15 & exports.idx(chr);
+exports.re_09 = /[0-9]/g;
+exports.re_az = /[a-z]/g;
+exports.re_AZ = /[A-Z]/g;
+exports.re_aZ = /[a-zA-Z]/g;
+exports.re_fw = /[!-~]/g;
+exports.replace = (...steps) => (text) => steps.reduce((acc, [re, fn]) => acc.replace(re, fn), text);

@@ -2,9 +2,9 @@
   "name": "wheels",
   "version": "0.7.0",
   "license": "ISC",
-  "main": "cjs/index.js",
-  "module": "esm/index.js",
-  "browser": "umd/wheels.js",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "browser": "dist/umd/wheels.js",
   "devDependencies": {
     "@types/jest": "^23.3.10",
     "deepmerge": "^3.0.0",

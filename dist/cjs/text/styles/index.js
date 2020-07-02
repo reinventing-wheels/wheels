@@ -1,0 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sansSerif = exports.serif = exports.script = exports.fractur = exports.doubleStruck = exports.monospace = exports.regional = exports.fullwidth = void 0;
+const util_1 = require("./util");
+const fractur = require("./fractur");
+exports.fractur = fractur;
+const script = require("./script");
+exports.script = script;
+const serif = require("./serif");
+exports.serif = serif;
+const sansSerif = require("./sans-serif");
+exports.sansSerif = sansSerif;
+exports.fullwidth = util_1.replace([util_1.re_fw, chr => util_1.str(0xfee0 + util_1.idx(chr))]);
+exports.regional = util_1.replace([util_1.re_aZ, chr => util_1.str(0x1f1e6 + util_1.idx_az(chr))]);
+exports.monospace = util_1.replace([util_1.re_AZ, chr => util_1.str(0x1d670 + util_1.idx_az(chr))], [util_1.re_az, chr => util_1.str(0x1d68a + util_1.idx_az(chr))], [util_1.re_09, chr => util_1.str(0x1d7f6 + util_1.idx_09(chr))]);
+exports.doubleStruck = util_1.replace([util_1.re_AZ, chr => util_1.str(0x1d538 + util_1.idx_az(chr))], [util_1.re_az, chr => util_1.str(0x1d552 + util_1.idx_az(chr))], [util_1.re_09, chr => util_1.str(0x1d7d8 + util_1.idx_09(chr))]);
