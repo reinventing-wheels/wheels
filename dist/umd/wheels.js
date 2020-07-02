@@ -139,10 +139,23 @@
       }
       return items;
   };
+  const weighted = (items) => {
+      const total = items.reduce((acc, [w]) => acc + w, 0);
+      return () => {
+          const r = Math.random() * total;
+          let acc = 0;
+          for (const [w, item] of items) {
+              if ((acc += w) > r)
+                  return item;
+          }
+          throw new Error();
+      };
+  };
 
   var index$1 = ({
     pick: pick,
     shuffle: shuffle,
+    weighted: weighted,
     sortIndicesByValues: sortIndicesByValues
   });
 
@@ -319,7 +332,7 @@
   const add$1 = (rgbʹ, rgbʺ) => rgb(min(r(rgbʹ) + r(rgbʺ), 0xff), min(g(rgbʹ) + g(rgbʺ), 0xff), min(b(rgbʹ) + b(rgbʺ), 0xff));
   const sub$1 = (rgbʹ, rgbʺ) => rgb(max(r(rgbʹ) - r(rgbʺ), 0), max(g(rgbʹ) - g(rgbʺ), 0), max(b(rgbʹ) - b(rgbʺ), 0));
   const mul$1 = (rgbʹ, rgbʺ) => rgb(r$1(rgbʹ) * r(rgbʺ) + .5, g$1(rgbʹ) * g(rgbʺ) + .5, b$1(rgbʹ) * b(rgbʺ) + .5);
-  const mix = (rgbʹ, rgbʺ) => (t) => rgb(lerp(r(rgbʹ), r(rgbʺ), t), lerp(g(rgbʹ), g(rgbʺ), t), lerp(b(rgbʹ), b(rgbʺ), t));
+  const mix = (rgbʹ, rgbʺ, t) => rgb(lerp(r(rgbʹ), r(rgbʺ), t), lerp(g(rgbʹ), g(rgbʺ), t), lerp(b(rgbʹ), b(rgbʺ), t));
 
   const random$1 = () => floor(random() * 0x1000000);
   const lum$2 = (rgb$$1) => lum(r(rgb$$1), g(rgb$$1), b(rgb$$1));

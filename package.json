@@ -1,6 +1,6 @@
 {
   "name": "wheels",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "license": "ISC",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",

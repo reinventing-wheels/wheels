@@ -7,4 +7,16 @@ export const shuffle = (items) => {
     }
     return items;
 };
+export const weighted = (items) => {
+    const total = items.reduce((acc, [w]) => acc + w, 0);
+    return () => {
+        const r = Math.random() * total;
+        let acc = 0;
+        for (const [w, item] of items) {
+            if ((acc += w) > r)
+                return item;
+        }
+        throw new Error();
+    };
+};
 export * from './sort-indices';

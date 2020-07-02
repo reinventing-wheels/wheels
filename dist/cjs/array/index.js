@@ -10,7 +10,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.shuffle = exports.pick = void 0;
+exports.weighted = exports.shuffle = exports.pick = void 0;
 const math_1 = require("../math");
 exports.pick = (items) => items[items.length * math_1.random() | 0];
 exports.shuffle = (items) => {
@@ -19,5 +19,17 @@ exports.shuffle = (items) => {
         [items[i], items[j]] = [items[j], items[i]];
     }
     return items;
+};
+exports.weighted = (items) => {
+    const total = items.reduce((acc, [w]) => acc + w, 0);
+    return () => {
+        const r = Math.random() * total;
+        let acc = 0;
+        for (const [w, item] of items) {
+            if ((acc += w) > r)
+                return item;
+        }
+        throw new Error();
+    };
 };
 __exportStar(require("./sort-indices"), exports);

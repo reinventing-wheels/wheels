@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.8.0](https://github.com/reinventing-wheels/wheels/compare/v0.7.0...v0.8.0) (2020-07-02)
+
+
+### Features
+
+* change build paths ([853ec3c](https://github.com/reinventing-wheels/wheels/commit/853ec3c))
+* hurr durr ([9c4a585](https://github.com/reinventing-wheels/wheels/commit/9c4a585))
+
+
+### BREAKING CHANGES
+
+* change build paths
+
+
+
 ## [0.7.0](https://github.com/reinventing-wheels/wheels/compare/v0.6.0...v0.7.0) (2019-07-09)
 
 
